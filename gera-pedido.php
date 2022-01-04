@@ -1,12 +1,19 @@
 <?php
 
     require_once 'vendor/autoload.php';
-    use Alura\DesignPattern\{GerarPedido, Orcamento,Pedido};
-
+    use Alura\DesignPattern\{GerarPedido, GerarPedidoHandler, Orcamento,Pedido};
+use Alura\DesignPattern\AcoesAoGerarPedido\CriarPedidoBanco;
+use Alura\DesignPattern\AcoesAoGerarPedido\EnviarPedidoPorEmail;
+use Alura\DesignPattern\AcoesAoGerarPedido\LogGerarPedido;
 
 $valorOrcamento = $argv[1];
 $numeroDeItens = $argv[2];
 $nomeCliente = $argv[3];
 
 $gerarPedido = new GerarPedido($valorOrcamento,$numeroDeItens,$nomeCliente);
-$gerarPedido->execute();
+$gerarPedidoHandler = new GerarPedidoHandler();
+$gerarPedidoHandler->adicionarAcaoAoGerarPedido(new CriarPedidoBanco());
+$gerarPedidoHandler->adicionarAcaoAoGerarPedido(new EnviarPedidoPorEmail());
+$gerarPedidoHandler->adicionarAcaoAoGerarPedido(new LogGerarPedido());
+
+$gerarPedidoHandler->execute($gerarPedido);
